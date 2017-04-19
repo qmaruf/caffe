@@ -158,8 +158,7 @@ def run(sequence_dir, detection_file, output_file, min_confidence,
 
     """
     seq_info = gather_sequence_info(sequence_dir, detection_file)
-    metric = nn_matching.NearestNeighborDistanceMetric(
-        "cosine", max_cosine_distance, nn_budget)
+    metric = nn_matching.NearestNeighborDistanceMetric("cosine", max_cosine_distance, nn_budget)
     tracker = Tracker(metric)
     results = []
 
@@ -167,15 +166,13 @@ def run(sequence_dir, detection_file, output_file, min_confidence,
         print("Processing frame %05d" % frame_idx)
 
         # Load image and generate detections.
-        detections = create_detections(
-            seq_info["detections"], frame_idx, min_detection_height)
+        detections = create_detections(seq_info["detections"], frame_idx, min_detection_height)
         detections = [d for d in detections if d.confidence >= min_confidence]
 
         # Run non-maxima suppression.
         boxes = np.array([d.tlwh for d in detections])
         scores = np.array([d.confidence for d in detections])
-        indices = preprocessing.non_max_suppression(
-            boxes, nms_max_overlap, scores)
+        indices = preprocessing.non_max_suppression(boxes, nms_max_overlap, scores)
         detections = [detections[i] for i in indices]
 
         # Update tracker.
