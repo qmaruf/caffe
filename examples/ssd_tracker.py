@@ -145,7 +145,7 @@ while(cap.isOpened()):
     
     
     detections = net.forward()['detection_out']
-    features = net.blobs['fc7'].data
+    features = net.blobs['conv7_1'].data
 
     # print features.shape, detections.shape
     # continue
