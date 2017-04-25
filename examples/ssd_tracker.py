@@ -110,8 +110,9 @@ metric = nn_matching.NearestNeighborDistanceMetric('cosine', max_cosine_distance
 tracker = Tracker(metric)
 
 import cv2
-cap = cv2.VideoCapture('/home/ml/1.mp4')
-
+cap = cv2.VideoCapture('/home/ml/Desktop/Desktop/2.mp4')
+print cap.isOpened()
+exit()
 while(cap.isOpened()):    
     ret, image = cap.read()
     cv2.imwrite('frame.jpg', image)
@@ -145,7 +146,10 @@ while(cap.isOpened()):
     
     
     detections = net.forward()['detection_out']
-    features = net.blobs['conv7_1'].data
+    features = net.blobs['conv10_2'].data
+
+    print features.shape
+    # continue
 
     # print features.shape, detections.shape
     # continue
