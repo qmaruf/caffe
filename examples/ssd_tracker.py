@@ -110,36 +110,14 @@ metric = nn_matching.NearestNeighborDistanceMetric('cosine', max_cosine_distance
 tracker = Tracker(metric)
 
 import cv2
-cap = cv2.VideoCapture('/home/ml/Desktop/Desktop/2.mp4')
+cap = cv2.VideoCapture('/home/ml/Videos/1.mp4')
 print cap.isOpened()
-exit()
+# exit()
 while(cap.isOpened()):    
     ret, image = cap.read()
     cv2.imwrite('frame.jpg', image)
-    image = caffe.io.load_image('frame.jpg')    
-
-    # print image.shape
-
-    
-    # image = image / np.linalg.norm(image)
-    # print image
-# for image in images:
-
-    # display_img = Image.open(image)
-    # draw = ImageDraw.Draw(display_img)
-    # image = caffe.io.load_image(image)
-    plt.imshow(image)
-
-    # plt.show(block=False)
-    # plt.pause(0.1)
-    # plt.cla()
-
-    # continue
-
-
-    # * Run the net and examine the top_k results
-
-    # In[11]:
+    image = caffe.io.load_image('frame.jpg')       
+    plt.imshow(image)    
 
     transformed_image = transformer.preprocess('data', image)
     net.blobs['data'].data[...] = transformed_image
@@ -147,18 +125,6 @@ while(cap.isOpened()):
     
     detections = net.forward()['detection_out']
     features = net.blobs['conv10_2'].data
-
-    print features.shape
-    # continue
-
-    # print features.shape, detections.shape
-    # continue
-    # print net.blobs.keys()
-    # print net.blobs['mbox_conf'].data.shape
-    # continue
-
-    
-    
     
 
     # Parse the outputs.
@@ -180,16 +146,7 @@ while(cap.isOpened()):
     top_xmax = det_xmax[top_indices]
     top_ymax = det_ymax[top_indices]
 
-
-    # * Plot the boxes
-
-    # In[12]:
-
-    # colors = plt.cm.hsv(np.linspace(0, 1, 21)).tolist()
-    # print colors
-    # exit()
-
-    # plt.imshow(image)
+    
     currentAxis = plt.gca()
 
     tlwh = []
@@ -204,27 +161,17 @@ while(cap.isOpened()):
         ymax = int(round(top_ymax[i] * image.shape[0]))
 
         if(xmin * xmax * ymin * ymax <= 0):continue
-        if(xmax - xmin < 10 or ymax - ymin < 10): continue
-
-        # print '>> ', ymax - ymin, xmax - xmin, (xmin, xmax, ymin, ymax)
+        if(xmax - xmin < 10 or ymax - ymin < 10): continue        
         
         car = image[ymin:ymax, xmin:xmax, :]
-        # print car.shape
-        # plt.imshow(car)
-        # plt.pause(0.1)
-        # continue
         TI = transformer.preprocess('data', car)
         net.blobs['data'].data[...] = TI
         net_detections = net.forward()['detection_out']
         feature = net.blobs['fc7'].data.flatten()
 
         tlwh = np.array([xmin, ymin, xmax-xmin, ymax-ymin])
-        confidence = 95.23
+        confidence = 95.23       
         
-        # print '============================'
-        # print tlwh
-        # print confidence
-        # print feature
     	detections.append(Detection(tlwh, confidence, feature))
 
     tracker.predict()
@@ -233,10 +180,7 @@ while(cap.isOpened()):
     for track in tracker.tracks:
         if not track.is_confirmed or track.time_since_update > 0: continue
         coords = track.to_tlwh()
-        if coords[2] < 5 or coords[3] < 5: continue
-        # draw.rectangle(coords)
-        # display_img.show()
-        # print coords
+        if coords[2] < 5 or coords[3] < 5: continue        
         rect = patches.Rectangle((coords[0], coords[1]), coords[2], coords[3],linewidth=1,edgecolor='r',facecolor='none')
         currentAxis.add_patch(rect)
         currentAxis.text(coords[0], coords[1], str(track.track_id), bbox=dict(facecolor='red', alpha=0.5))
@@ -244,27 +188,3 @@ while(cap.isOpened()):
     plt.show(block=False)
     plt.pause(0.0001)
     plt.cla()
-
-
-        # continue
-    
-    #     score = top_conf[i]
-    #     label = int(top_label_indices[i])
-    #     label_name = top_labels[i]
-    #     display_txt = '%s: %.2f'%(label_name, score)
-    #     coords = (xmin, ymin), xmax-xmin+1, ymax-ymin+1
-    #     color = colors[label]
-    #     currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))
-    #     currentAxis.text(xmin, ymin, display_txt, bbox={'facecolor':color, 'alpha':0.5})
-
-    # iter += 1
-    # plt.show(block=False)
-    # plt.savefig("/home/ml/Desktop/cars/" + str(iter) + ".jpg")
-    # plt.pause(1)
-    # plt.cla()
-
-
-# In[ ]:
-
-
-
